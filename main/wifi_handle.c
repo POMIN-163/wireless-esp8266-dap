@@ -1,3 +1,4 @@
+#include "projdefs.h"
 #include "sdkconfig.h"
 
 #include <string.h>
@@ -16,6 +17,7 @@
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 #include "esp_log.h"
+#include "oled.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP8266
     #define PIN_LED_WIFI_STATUS 15
@@ -55,10 +57,19 @@ static esp_err_t event_handler(void *ctx, system_event_t *event) {
         GPIO_SET_LEVEL_HIGH(PIN_LED_WIFI_STATUS);
 
         xEventGroupSetBits(wifi_event_group, IPV4_GOTIP_BIT);
-        os_printf("SYSTEM EVENT STA GOT IP : %s\r\n", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+        char* addr = ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip);
+        os_printf("SYSTEM EVENT STA GOT IP : %s\r\n", addr);
+
+        printf_oled(0, "wifi:%-10s", wifi_list[ssid_index - 1].ssid);
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        print_oled(0, addr);
+        print_oled(1, "Wait link...");
+
         break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
         GPIO_SET_LEVEL_LOW(PIN_LED_WIFI_STATUS);
+
+        print_oled(0, "Wait wifi...");
 
         os_printf("Disconnect reason : %d\r\n", (int)info->disconnected.reason);
 
@@ -104,6 +115,7 @@ static void ssid_change() {
             .password = "",
         },
     };
+    printf_oled(0, "link:%-10s", wifi_list[ssid_index].ssid);
 
     strcpy((char *)wifi_config.sta.ssid, wifi_list[ssid_index].ssid);
     strcpy((char *)wifi_config.sta.password, wifi_list[ssid_index].password);

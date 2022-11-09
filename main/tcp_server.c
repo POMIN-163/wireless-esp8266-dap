@@ -31,6 +31,8 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 
+#include "oled.h"
+
 extern TaskHandle_t kDAPTaskHandle;
 extern int kRestartDAPHandle;
 
@@ -110,6 +112,7 @@ void tcp_server_task(void *pvParameters)
             setsockopt(kSock, SOL_SOCKET, SO_KEEPALIVE, (void *)&on, sizeof(on));
             setsockopt(kSock, IPPROTO_TCP, TCP_NODELAY, (void *)&on, sizeof(on));
             os_printf("Socket accepted\r\n");
+            print_oled(1, "> DAP linked <");
 
             while (1)
             {
@@ -176,6 +179,7 @@ void tcp_server_task(void *pvParameters)
             if (kSock != -1)
             {
                 os_printf("Shutting down socket and restarting...\r\n");
+                print_oled(1, "Wait link...");
                 //shutdown(kSock, 0);
                 close(kSock);
                 if (kState == EMULATING || kState == EL_DATA_PHASE)

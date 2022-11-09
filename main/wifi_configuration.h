@@ -15,10 +15,14 @@ static struct {
     const char *ssid;
     const char *password;
 } wifi_list[] __attribute__((unused)) = {
-    {.ssid = "OTA", .password = "12345678"},
-    {.ssid = "DAP", .password = "12345678"},
+    {.ssid = "OTA",        .password = "88888888"  },
+    {.ssid = "DAP",        .password = "88888888"  },
+    {.ssid = "ry70",       .password = "88888888"  },
+    {.ssid = "landianb62", .password = "landianb62"},
+    {.ssid = "CMCC-WEB",   .password = "88888888"  },
+    {.ssid = "pomin",      .password = "88888888"  },
+    {.ssid = "POMIN",      .password = "88888888"  },
     // Add your WAP like this:
-    // {.ssid = "your ssid", .password = "your password"},
 };
 
 #define WIFI_LIST_SIZE (sizeof(wifi_list) / sizeof(wifi_list[0]))

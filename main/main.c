@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <sys/param.h>
 
+#include "gpio.h"
 #include "sdkconfig.h"
 #include "main/tcp_server.h"
 #include "main/tcp_netconn.h"
@@ -71,6 +72,8 @@ void mdns_setup() {
     }
     ESP_LOGI(MDNS_TAG, "mDNS instance name set to: [%s]", MDNS_INSTANCE);
 }
+#include "oled.h"
+#include "bmp.h"
 
 void app_main() {
     // struct rst_info *rtc_info = system_get_rst_info();
@@ -90,6 +93,36 @@ void app_main() {
     //             rtc_info->excvaddr, rtc_info->depc);
     // }
 
+    os_printf("pomin DAP start !!!\n");
+
+    gpio_config_t io4 = {
+        .mode = GPIO_MODE_OUTPUT, .pin_bit_mask = 1 << 4, .pull_up_en = 1};
+    gpio_config_t io5 = {
+        .mode = GPIO_MODE_OUTPUT, .pin_bit_mask = 1 << 5, .pull_up_en = 1};
+
+    gpio_config(&io4);
+    gpio_config(&io5);
+
+    OLED_Init();
+
+    OLED_DrawBMP(logo);
+
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    OLED_Clear();
+
+    print_oled(0, "Wait wifi...");
+
+    // for (size_t i = 0; i < 1000; i++) {
+
+    //     gpio_set_level(4, 1);
+    //     gpio_set_level(5, 1);
+    //     gpio_set_level(15, 1);
+    //     vTaskDelay(pdMS_TO_TICKS(1));
+    //     gpio_set_level(4, 0);
+    //     gpio_set_level(5, 0);
+    //     gpio_set_level(15, 0);
+    //     vTaskDelay(pdMS_TO_TICKS(1));
+    // }
     ESP_ERROR_CHECK(nvs_flash_init());
 
 #if (USE_UART_BRIDGE == 1)
